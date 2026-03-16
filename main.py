@@ -18,6 +18,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 from tracker import update_products
+from selenium.webdriver.chrome.service import Service
 import time, os, pytz
 
 path = find_dotenv()
@@ -57,7 +58,8 @@ def admin_only(f):
 
 
 def seeProduct(url):
-    driver = webdriver.Chrome(options=chrome_options)
+    service = Service("/run/current-system/sw/bin/chromedriver")
+    driver = webdriver.Chrome(service=service, options=chrome_options)
     driver.get(url)
 
     try:

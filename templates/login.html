@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="content">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <img src="../static/images/undraw_remotely_2j6y.svg" alt="Image" class="img-fluid">
+        </div>
+        <div class="col-md-6 contents">
+          <div class="row justify-content-center">
+            <div class="col-md-8">
+              <div class="mb-4">
+              <h3>Sign In</h3>
+                {% if error %}
+                    <p style="color:red" class="mb-4">{{error}}</p>
+                {% else %}
+                    <p class="mb-4">Log in to your account, with the credentials you have used during registration.</p>
+                {% endif %}
+            </div>
+              <form action="{{url_for('login')}}" method="post">
+                {{form.hidden_tag()}}
+               <div class="form-group first mb-1">
+                {{ form.email( class="form-control", id="username") }}
+                {{ form.email.label }}
+              </div>
+              <div class="form-group last mb-4">
+                {{ form.password(class="form-control", id="password") }}
+                {{ form.password.label }}
+              </div>
+              
+              <div class="d-flex mb-5 align-items-center">
+                <label class="control control--checkbox mb-0"><span class="caption">Remember me</span>
+                  <input type="checkbox" checked="checked"/>
+                  <div class="control__indicator"></div>
+                </label>
+                <span class="ml-auto"><a href="{{url_for('register')}}" class="forgot-pass">Don't have an account?</a></span>
+              </div>
+              {{ form.submit(class="btn btn-block btn-primary") }}
+
+            </form>
+            </div>
+          </div>
+          
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
+  
+    <script src="../static/js/jquery-3.3.1.min.js"></script>
+    <script src="../static/js/popper.min.js"></script>
+    <script src="../static/js/bootstrap.min.js"></script>
+    <script src="../static/js/main.js"></script>
+{% endblock %}

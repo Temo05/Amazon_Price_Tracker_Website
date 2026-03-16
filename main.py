@@ -15,8 +15,10 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import time, os
-
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.cron import CronTrigger
+from tracker import update_products
+import time, os, pytz
 
 path = find_dotenv()
 load_dotenv(path)
@@ -40,6 +42,7 @@ chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--disable-gpu")
 chrome_options.add_argument("--disable-extensions")
+chrome_options.binary_location = "/run/current-system/sw/bin/chromium"
 chrome_options.page_load_strategy = 'eager'
 
 
@@ -145,6 +148,14 @@ try:
         db.create_all()
 except Exception as e:
     pass
+
+scheduler = BackgroundScheduler()
+scheduler.add_job(
+    func=lambda: update_products(app, db, Products, seeProduct),
+    trigger=CronTrigger(hour=5, minute=0, timezone=pytz.utc)  # UTC 5:00 = GMT+4 9:00
+)
+scheduler.start()
+
 
 def editItem():
     try:

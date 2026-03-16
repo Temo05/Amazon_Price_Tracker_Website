@@ -50,6 +50,11 @@ if platform.system() == "Linux":
     chrome_options.add_argument("--headless=new")
     chrome_options.add_argument("--single-process")
     chrome_options.add_argument("--remote-debugging-port=9222")
+    chrome_options.add_argument("--memory-pressure-off")
+    chrome_options.add_argument("--max_old_space_size=4096")
+    chrome_options.add_argument("--disable-web-security")
+    chrome_options.add_argument("--allow-running-insecure-content")
+    chrome_options.add_argument("--disable-features=VizDisplayCompositor")
     chrome_options.binary_location = "/root/.nix-profile/bin/chromium"
 else:
     chrome_options.add_argument("--disable-renderer-backgrounding")

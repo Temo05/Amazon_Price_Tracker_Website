@@ -320,6 +320,13 @@ def all_products(api_key):
     else:
         return jsonify(error="Invalid API key"), 403
 
+@app.route("/check")
+def check():
+    import subprocess
+    result = subprocess.run(["which", "chromedriver"], capture_output=True, text=True)
+    result2 = subprocess.run(["which", "chromium"], capture_output=True, text=True)
+    return f"chromedriver: {result.stdout} | chromium: {result2.stdout}"
+
 @app.errorhandler(404)
 def page_not_found(e):
     return e, 404

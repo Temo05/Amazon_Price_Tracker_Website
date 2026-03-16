@@ -43,7 +43,7 @@ chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--disable-gpu")
 chrome_options.add_argument("--disable-extensions")
-chrome_options.binary_location = "/run/current-system/sw/bin/chromium"
+chrome_options.binary_location = "/root/.nix-profile/bin/chromium"
 chrome_options.page_load_strategy = 'eager'
 
 
@@ -58,7 +58,7 @@ def admin_only(f):
 
 
 def seeProduct(url):
-    service = Service("/run/current-system/sw/bin/chromedriver")
+    service = Service("/root/.nix-profile/bin/chromedriver")
     driver = webdriver.Chrome(service=service, options=chrome_options)
     driver.get(url)
 
@@ -319,13 +319,6 @@ def all_products(api_key):
         return jsonify(data)
     else:
         return jsonify(error="Invalid API key"), 403
-
-@app.route("/check")
-def check():
-    import subprocess
-    result = subprocess.run(["which", "chromedriver"], capture_output=True, text=True)
-    result2 = subprocess.run(["which", "chromium"], capture_output=True, text=True)
-    return f"chromedriver: {result.stdout} | chromium: {result2.stdout}"
 
 @app.errorhandler(404)
 def page_not_found(e):

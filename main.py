@@ -209,7 +209,7 @@ def index():
                     db.session.commit()
             except Exception as e:
                 print(e)
-                error = "Unexpected error please try again later"
+                error = e
             else:
                 return redirect("/watchlist")
         else:

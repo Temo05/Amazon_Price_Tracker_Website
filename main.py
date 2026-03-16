@@ -19,7 +19,8 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 from tracker import update_products
 from selenium.webdriver.chrome.service import Service
-import time, os, pytz
+from webdriver_manager.chrome import ChromeDriverManager
+import time, os, pytz, platform
 
 path = find_dotenv()
 load_dotenv(path)
@@ -43,9 +44,17 @@ chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--disable-gpu")
 chrome_options.add_argument("--disable-extensions")
-chrome_options.binary_location = "/root/.nix-profile/bin/chromium"
-chrome_options.page_load_strategy = 'eager'
+chrome_options.add_argument("--window-size=1920,1080")
 
+if platform.system() == "Linux":
+    chrome_options.add_argument("--headless=new")
+    chrome_options.add_argument("--single-process")
+    chrome_options.add_argument("--remote-debugging-port=9222")
+    chrome_options.binary_location = "/root/.nix-profile/bin/chromium"
+else:
+    chrome_options.add_argument("--disable-renderer-backgrounding")
+    chrome_options.add_argument("--disable-background-timer-throttling")
+    chrome_options.add_argument("--disable-backgrounding-occluded-windows")
 
 def admin_only(f):
     @wraps(f)
@@ -58,7 +67,10 @@ def admin_only(f):
 
 
 def seeProduct(url):
-    service = Service("/root/.nix-profile/bin/chromedriver")
+    if platform.system() == "Linux":
+        service = Service("/root/.nix-profile/bin/chromedriver")
+    else:
+        service = Service(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service, options=chrome_options)
     driver.get(url)
 
@@ -69,7 +81,7 @@ def seeProduct(url):
     except:
         pass
 
-    name = WebDriverWait(driver, 5).until(
+    name = WebDriverWait(driver, 10).until(  # 5 → 10
         EC.presence_of_element_located((By.ID, "productTitle"))
     ).text.split(",")[0].strip()
 
@@ -197,7 +209,7 @@ def index():
                     db.session.commit()
             except Exception as e:
                 print(e)
-                error = e
+                error = "Unexpected error please try again later"
             else:
                 return redirect("/watchlist")
         else:
